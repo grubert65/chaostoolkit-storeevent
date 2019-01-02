@@ -47,9 +47,10 @@ def after_activity_control(context: dict, arguments=None):
         args = json.dumps(json.dumps(provider['arguments']))
 
     if provider['type'] == 'python':
-        stmt = "INSERT INTO actions (event_time, module, func, args) "\
-            "VALUES({},'{}','{}','{}')".format(
+        stmt = "INSERT INTO actions (event_time, type, module, func, args) "\
+            "VALUES({},'{}','{}','{}','{}')".format(
                 time.time(),
+                provider['type'],
                 provider['module'],
                 provider['func'],
                 args
