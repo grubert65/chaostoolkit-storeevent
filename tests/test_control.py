@@ -1,7 +1,13 @@
 import unittest
+import sys, os
 from chaosdb.litedb import configure_control, before_activity_control, after_activity_control
 
 class TestControl( unittest.TestCase ):
+
+    @classmethod
+    def setUpClass(cls):
+        import pdb; pdb.set_trace()
+        os.system('./scripts/trace.sh')
 
 
     def test_before_activity_control(self):
