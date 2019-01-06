@@ -7,14 +7,15 @@ class TestControl( unittest.TestCase ):
     @classmethod
     def setUpClass(cls):
 #         import pdb; pdb.set_trace()
-        # trace db creation
-        os.system('./scripts/trace.sh')
-
+#   some initialization...
 
     def test_before_activity_control(self):
 
         self.assertEqual(configure_control({
-            "litedb_filename": "./trace.db"
+            "influx_host": "localhost",
+            "influx_port": 8086,
+            "influx_http_endpoint": "/write",
+            "influx_database": "gatlingdb"
         }, {} ), 1)
 
         context =  {
@@ -32,7 +33,10 @@ class TestControl( unittest.TestCase ):
     def test_after_activity_control(self):
 
         self.assertEqual(configure_control({
-            "litedb_filename": "./trace.db"
+            "influx_host": "localhost",
+            "influx_port": 8086,
+            "influx_http_endpoint": "/write",
+            "influx_database": "gatlingdb"
         }, {} ), 1)
 
         context =  {
