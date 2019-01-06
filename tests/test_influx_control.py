@@ -6,7 +6,8 @@ class TestControl( unittest.TestCase ):
 
     @classmethod
     def setUpClass(cls):
-        import pdb; pdb.set_trace()
+#         import pdb; pdb.set_trace()
+        # trace db creation
         os.system('./scripts/trace.sh')
 
 
