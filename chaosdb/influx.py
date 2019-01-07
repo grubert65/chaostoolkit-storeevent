@@ -11,7 +11,8 @@ __all__ = [
     "cleanup_control",
     "configure_control",
     "before_activity_control",
-    "after_activity_control"
+    "after_activity_control",
+    "encode_payload_in_line_protocol"
 ]
 
 # global defaults
@@ -97,3 +98,20 @@ def store_action(scope, provider):
 #         logger.error("Error inserting action")
 
     return 1
+
+def encode_payload_in_line_protocol(measurement, fields: dict, tags={}):
+
+    payload = measurement
+
+    for k,v in tags.items():
+        payload = payload + ',' + k + '=' + v
+
+    payload = payload + " "
+
+    for k,v in fields.items():
+        payload = payload + k + '=' + v + ','
+
+    payload = payload.rstrip(',')
+    return payload
+
+
