@@ -1,13 +1,14 @@
 import unittest
 import sys, os
-from chaosdb.litedb import configure_control, before_activity_control, after_activity_control
+from chaosdb.influx import configure_control, before_activity_control, after_activity_control
 
 class TestControl( unittest.TestCase ):
 
     @classmethod
     def setUpClass(cls):
-#         import pdb; pdb.set_trace()
+        os.system('./scripts/influxd.sh')
 #   some initialization...
+
 
     def test_before_activity_control(self):
 
@@ -15,7 +16,7 @@ class TestControl( unittest.TestCase ):
             "influx_host": "localhost",
             "influx_port": 8086,
             "influx_http_endpoint": "/write",
-            "influx_database": "gatlingdb"
+            "influx_database": "chaostoolkit"
         }, {} ), 1)
 
         context =  {
@@ -36,7 +37,7 @@ class TestControl( unittest.TestCase ):
             "influx_host": "localhost",
             "influx_port": 8086,
             "influx_http_endpoint": "/write",
-            "influx_database": "gatlingdb"
+            "influx_database": "chaostoolkit"
         }, {} ), 1)
 
         context =  {
