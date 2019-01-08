@@ -126,15 +126,21 @@ def encode_payload_in_line_protocol(measurement, fields: dict, tags={}):
 
     payload = measurement
 
+    # never use quotes for tags...
     for k in sorted(tags):
-#         payload = payload + ',' + '"' + k + '"' + '=' + tags[k]
-        payload = "{},\"{}\"=\"{}\"".format(payload, k, tags[k])
+        payload = "{},{}={}".format(payload, k, tags[k])
 
     payload = payload + " "
 
+#     import pdb; pdb.set_trace()
     for k,v in fields.items():
-#         payload = payload + k + '=' + v + ','
-        payload = "{}\"{}\"=\"{}\",".format(payload, k, v)
+        if isinstance(v, str):
+            payload = "{}{}=\"{}\",".format(payload, k, v)
+        elif isinstance(v, dict):
+            # TODO : we have to encode dicts properly...
+            continue
+        else:
+            payload = "{}{}={},".format(payload, k, v)
 
     payload = payload.rstrip(',')
     return payload

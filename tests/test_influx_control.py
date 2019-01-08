@@ -25,7 +25,8 @@ class TestControl( unittest.TestCase ):
         "provider": {
           "type": "python",
           "module": "foo",
-          "func": "bar"
+          "func": "bar",
+          "arguments": {"foo": "bar"}
           }
         }
         self.assertEqual( before_activity_control(context, {}), True )
