@@ -1,8 +1,4 @@
 # -*- coding: utf-8 -*-
-# NOTE: under rewrite...
-import sqlite3
-import json
-import time
 import requests
 from logzero import logger
 from chaoslib.types import Configuration, Secrets
