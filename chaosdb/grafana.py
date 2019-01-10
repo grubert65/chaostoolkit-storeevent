@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 # a chaosdb control class to write events directly into grafana data store as
 # annotations using the annotations HTTP API
+# The "time" (millisecs since epoch) attribute can be added to each payload 
+# to set the annotation time, if missing grafana will consider it's process time for the event.
 
 import requests
 import json
@@ -79,7 +81,6 @@ def before_experiment_control(context: dict, arguments=None):
 
 
 def after_experiment_control(context: dict, arguments=None):
-#     import pdb; pdb.set_trace()
     exp_end_time = int(round(time.time() * 1000))
 
     tags = [ context['title'] ]
@@ -99,13 +100,11 @@ def after_experiment_control(context: dict, arguments=None):
 
 def before_method_control(context: dict, arguments=None):
 
-#     import pdb; pdb.set_trace()
     tags = [ context['description'] ]
     text = 'Start: ' + context['title']
 
     payload = {
       "dashboardId": dashboardId,
-#       "time": int(round(time.time() * 1000)),
       "tags": tags,
       "text": text
     }
@@ -114,13 +113,11 @@ def before_method_control(context: dict, arguments=None):
 
 def after_method_control(context: dict, arguments=None):
 
-#     import pdb; pdb.set_trace()
     tags = [ context['description'] ]
     text = 'End: ' + context['title']
 
     payload = {
       "dashboardId": dashboardId,
-#       "time": int(round(time.time() * 1000)),
       "tags": tags,
       "text": text
     }
@@ -129,13 +126,11 @@ def after_method_control(context: dict, arguments=None):
 
 def before_activity_control(context: dict, arguments=None):
 
-#     import pdb; pdb.set_trace()
     tags = [ context['type'], context['name'] ]
     text = f"[before][{context['type']}]:{context['name']}"
 
     payload = {
       "dashboardId": dashboardId,
-#       "time": int(round(time.time() * 1000)),
       "tags": tags,
       "text": text
     }
@@ -144,13 +139,11 @@ def before_activity_control(context: dict, arguments=None):
 
 def after_activity_control(context: dict, arguments=None):
 
-#     import pdb; pdb.set_trace()
     tags = [ context['type'], context['name'] ]
     text = f"[after][{context['type']}]:{context['name']}"
 
     payload = {
       "dashboardId": dashboardId,
-#       "time": int(round(time.time() * 1000)),
       "tags": tags,
       "text": text
     }
