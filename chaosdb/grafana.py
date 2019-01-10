@@ -30,7 +30,12 @@ __all__ = [
     "cleanup_control",
     "configure_control",
     "before_experiment_control",
-    "after_experiment_control"
+    "after_experiment_control",
+    "before_method_control",
+    "after_method_control",
+    "before_activity_control",
+    "after_activity_control",
+    "post_event"
 ]
 
 # global defaults
@@ -51,10 +56,10 @@ def configure_control(c: Configuration, s: Secrets):
     global dashboardId
 
     # defaults
-    grafana_user = 'admin'
-    grafana_pass = 'admin'
-    grafana_host = 'localhost'
-    grafana_port = 3000
+    grafana_user = c.get('grafana_user', 'admin')
+    grafana_pass = c.get('grafana_pass', 'admin')
+    grafana_host = c.get('grafana_host', 'localhost')
+    grafana_port = c.get('grafana_port', 3000)
     grafana_annotation_api_endpoint = '/api/annotations'
     exp_start_time  = int(round(time.time() * 1000))
     exp_end_time    = int(round(time.time() * 1000))
@@ -67,7 +72,9 @@ def configure_control(c: Configuration, s: Secrets):
 # at experiment end
 def before_experiment_control(context: dict, arguments=None):
 #     import pdb; pdb.set_trace()
-    exp_start_time = int(round(time.time() * 1000))
+    d = datetime.now()
+    mill = int(d.microsecond/1000)
+    exp_start_time = int(round(time.time() * 1000)) + mill
     return 1
 
 
@@ -77,10 +84,6 @@ def after_experiment_control(context: dict, arguments=None):
 
     tags = [ context['title'] ]
     text = context['description']
-    headers = {
-        'Accept': 'application/json', 
-        'Content-Type': 'application/json'
-    }
 
     payload = {
       "dashboardId": dashboardId,
@@ -91,12 +94,76 @@ def after_experiment_control(context: dict, arguments=None):
       "text": text
     }
 
-    post_event(payload)
+    return post_event(payload)
 
-    return 1
+
+def before_method_control(context: dict, arguments=None):
+
+#     import pdb; pdb.set_trace()
+    tags = [ context['description'] ]
+    text = 'Start: ' + context['title']
+
+    payload = {
+      "dashboardId": dashboardId,
+#       "time": int(round(time.time() * 1000)),
+      "tags": tags,
+      "text": text
+    }
+
+    return post_event(payload)
+
+def after_method_control(context: dict, arguments=None):
+
+#     import pdb; pdb.set_trace()
+    tags = [ context['description'] ]
+    text = 'End: ' + context['title']
+
+    payload = {
+      "dashboardId": dashboardId,
+#       "time": int(round(time.time() * 1000)),
+      "tags": tags,
+      "text": text
+    }
+
+    return post_event(payload)
+
+def before_activity_control(context: dict, arguments=None):
+
+#     import pdb; pdb.set_trace()
+    tags = [ context['type'], context['name'] ]
+    text = f"[before][{context['type']}]:{context['name']}"
+
+    payload = {
+      "dashboardId": dashboardId,
+#       "time": int(round(time.time() * 1000)),
+      "tags": tags,
+      "text": text
+    }
+
+    return post_event(payload)
+
+def after_activity_control(context: dict, arguments=None):
+
+#     import pdb; pdb.set_trace()
+    tags = [ context['type'], context['name'] ]
+    text = f"[after][{context['type']}]:{context['name']}"
+
+    payload = {
+      "dashboardId": dashboardId,
+#       "time": int(round(time.time() * 1000)),
+      "tags": tags,
+      "text": text
+    }
+
+    return post_event(payload)
 
 
 def post_event(payload):
+
+    headers = {
+        'Accept': 'application/json', 
+        'Content-Type': 'application/json'
+    }
 
     r = requests.post("http://{}:{}{}".format(
         grafana_host,
@@ -106,3 +173,4 @@ def post_event(payload):
         headers=headers,
         data=json.dumps(payload))
     
+    return r.status_code
