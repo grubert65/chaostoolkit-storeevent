@@ -91,6 +91,13 @@ def after_experiment_control(context: dict, arguments=None):
       "text": text
     }
 
+    post_event(payload)
+
+    return 1
+
+
+def post_event(payload):
+
     r = requests.post("http://{}:{}{}".format(
         grafana_host,
         grafana_port,
@@ -99,5 +106,3 @@ def after_experiment_control(context: dict, arguments=None):
         headers=headers,
         data=json.dumps(payload))
     
-
-    return 1
