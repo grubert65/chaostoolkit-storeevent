@@ -83,8 +83,8 @@ def before_experiment_control(context: dict, arguments=None):
 def after_experiment_control(context: dict, arguments=None):
     exp_end_time = int(round(time.time() * 1000))
 
-    tags = [ context['title'] ]
-    text = context['description']
+    tags = [ 'chaostoolkit', 'experiment' ]
+    text = context['title']
 
     payload = {
       "dashboardId": dashboardId,
@@ -100,8 +100,8 @@ def after_experiment_control(context: dict, arguments=None):
 
 def before_method_control(context: dict, arguments=None):
 
-    tags = [ context['description'] ]
-    text = 'Start: ' + context['title']
+    tags = [ 'chaostoolkit', 'method', 'before', context['description'] ]
+    text = context['title']
 
     payload = {
       "dashboardId": dashboardId,
@@ -113,8 +113,8 @@ def before_method_control(context: dict, arguments=None):
 
 def after_method_control(context: dict, arguments=None):
 
-    tags = [ context['description'] ]
-    text = 'End: ' + context['title']
+    tags = [ 'chaostoolkit', 'method', 'after', context['description'] ]
+    text = context['title']
 
     payload = {
       "dashboardId": dashboardId,
@@ -126,8 +126,8 @@ def after_method_control(context: dict, arguments=None):
 
 def before_activity_control(context: dict, arguments=None):
 
-    tags = [ context['type'], context['name'] ]
-    text = f"[before][{context['type']}]:{context['name']}"
+    tags = [ 'chaostoolkit', 'activity', 'before', context['type'], context['name'] ]
+    text = f"[{context['type']}]:{context['name']}"
 
     payload = {
       "dashboardId": dashboardId,
@@ -139,8 +139,8 @@ def before_activity_control(context: dict, arguments=None):
 
 def after_activity_control(context: dict, arguments=None):
 
-    tags = [ context['type'], context['name'] ]
-    text = f"[after][{context['type']}]:{context['name']}"
+    tags = [ 'chaostoolkit', 'activity', 'after', context['type'], context['name'] ]
+    text = f"[{context['type']}]:{context['name']}"
 
     payload = {
       "dashboardId": dashboardId,
