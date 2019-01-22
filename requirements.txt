@@ -1,5 +1,5 @@
 logzero
 requests
-chaostoolkit-lib>=0.16.0
+chaostoolkit-lib
 pytest
 
