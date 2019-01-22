@@ -10,6 +10,7 @@ from requests.auth import HTTPBasicAuth
 import time
 from logzero import logger
 from chaoslib.types import Configuration, Secrets
+from .utils import can_connect_to
 
 import logging
 
@@ -29,6 +30,7 @@ requests_log.setLevel(logging.DEBUG)
 requests_log.propagate = True
 
 __all__ = [
+    "running",
     "cleanup_control",
     "configure_control",
     "before_experiment_control",
@@ -41,6 +43,13 @@ __all__ = [
 ]
 
 # global defaults
+grafana_host = 'localhost'
+grafana_port = 3000
+grafana_annotation_api_endpoint = '/api/annotations'
+grafana_user = 'admin'
+grafana_pass = 'admin'
+exp_start_time  = int(round(time.time() * 1000))
+exp_end_time    = int(round(time.time() * 1000))
 
 def cleanup_control():
     return 1
@@ -65,9 +74,15 @@ def configure_control(c: Configuration, s: Secrets):
     grafana_annotation_api_endpoint = '/api/annotations'
     exp_start_time  = int(round(time.time() * 1000))
     exp_end_time    = int(round(time.time() * 1000))
-    dashboardId = 5
+    dashboardId = c.get('dashboardId')
 
     return 1
+
+
+def running():
+    """ Test if the Grafana server is running """
+
+    return can_connect_to(grafana_host, grafana_port)
 
 
 # Note: annotation region around the experiment is sent

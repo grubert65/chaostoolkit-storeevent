@@ -2,6 +2,7 @@
 import requests
 from logzero import logger
 from chaoslib.types import Configuration, Secrets
+from .utils import can_connect_to
 
 import logging
 
@@ -21,6 +22,7 @@ requests_log.setLevel(logging.DEBUG)
 requests_log.propagate = True
 
 __all__ = [
+    "running",
     "cleanup_control",
     "configure_control",
     "before_activity_control",
@@ -33,6 +35,12 @@ influx_host         = "localhost"
 influx_port         = 8086
 influx_http_endpoint= "/write"
 influx_database     = "gatlingdb"
+
+def running():
+    """ Test if the InfluxDB server is running """
+
+    return can_connect_to(influx_host, influx_port)
+
 
 def cleanup_control():
     return 1

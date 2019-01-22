@@ -1,12 +1,13 @@
 import unittest
 import sys, os
-from chaosdb.influx import configure_control, before_activity_control, after_activity_control
+from chaosdb.influx import running, configure_control, before_activity_control, after_activity_control
 
+@unittest.skipIf(running() is False, "Test skipped: InfluxDB server not running")
 class TestControl( unittest.TestCase ):
 
-    @classmethod
-    def setUpClass(cls):
-        os.system('./scripts/influxd.sh')
+#     @classmethod
+#     def setUpClass(cls):
+#         os.system('./scripts/influxd.sh')
 #   some initialization...
 
 
