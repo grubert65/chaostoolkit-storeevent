@@ -1,5 +1,5 @@
 logzero
 requests
 chaostoolkit-lib>=0.16.0
-pytest>=2.8
+pytest
 
