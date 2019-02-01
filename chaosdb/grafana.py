@@ -179,6 +179,7 @@ def post_event(payload):
         grafana_annotation_api_endpoint),
         auth=HTTPBasicAuth(grafana_user, grafana_pass),
         headers=headers,
-        data=json.dumps(payload))
+        data=json.dumps(payload),
+        timeout=0.5)
     
     return r.status_code
