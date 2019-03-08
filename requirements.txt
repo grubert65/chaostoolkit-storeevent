@@ -2,4 +2,5 @@ logzero
 requests
 chaostoolkit-lib
 pytest
+datetime
 

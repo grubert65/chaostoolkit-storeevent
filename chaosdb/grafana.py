@@ -8,6 +8,7 @@ import requests
 import json
 from requests.auth import HTTPBasicAuth
 import time
+import datetime
 from logzero import logger
 from chaoslib.types import Configuration, Secrets
 from .utils import can_connect_to
@@ -89,7 +90,7 @@ def running():
 # at experiment end
 def before_experiment_control(context: dict, arguments=None):
 #     import pdb; pdb.set_trace()
-    d = datetime.now()
+    d = datetime.datetime.now()
     mill = int(d.microsecond/1000)
     exp_start_time = int(round(time.time() * 1000)) + mill
     return 1
