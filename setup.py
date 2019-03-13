@@ -3,6 +3,7 @@
 
 """The setup script."""
 
+import os
 from setuptools import setup, find_packages
 
 with open('README.rst') as readme_file:
@@ -16,6 +17,17 @@ requirements = [ ]
 setup_requirements = ['pytest-runner', ]
 
 test_requirements = ['pytest', ]
+
+def get_version_from_package() -> str:
+    path = os.path.join(os.path.dirname(__file__), "chaosdb/__init__.py")
+    path = os.path.normpath(os.path.abspath(path))
+    with open(path) as f:
+        for line in f:
+            if line.startswith("__version__"):
+                token, version = line.split(" = ", 1)
+                version = version.replace("'", "").strip()
+                return version
+
 
 setup(
     author="Marco Masetti",
@@ -43,6 +55,6 @@ setup(
     test_suite='tests',
     tests_require=test_requirements,
     url='https://github.com/grubert65/chaostoolkit-storeevent',
-    version='0.0.9',
+    version=get_version_from_package(),
     zip_safe=False,
 )
