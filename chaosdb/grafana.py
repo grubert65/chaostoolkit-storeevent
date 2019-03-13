@@ -142,7 +142,17 @@ def after_method_control(context: dict, arguments=None):
 
 def before_activity_control(context: dict, arguments=None):
 
-    tags = [ 'chaostoolkit', 'activity', 'before', context['type'], context['name'] ]
+    tags = [ 
+            'chaostoolkit', 
+            'activity', 
+            'before', 
+            context['type'], 
+            context['name'] 
+    ]
+
+    if ( context['provider']['type'] == 'python'):
+        tags.append(context['provider']['func'])
+
     text = f"[{context['type']}]:{context['name']}"
 
     payload = {
@@ -156,6 +166,10 @@ def before_activity_control(context: dict, arguments=None):
 def after_activity_control(context: dict, arguments=None):
 
     tags = [ 'chaostoolkit', 'activity', 'after', context['type'], context['name'] ]
+
+    if ( context['provider']['type'] == 'python'):
+        tags.append(context['provider']['func'])
+
     text = f"[{context['type']}]:{context['name']}"
 
     payload = {
