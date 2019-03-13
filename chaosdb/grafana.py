@@ -89,7 +89,6 @@ def running():
 # Note: annotation region around the experiment is sent
 # at experiment end
 def before_experiment_control(context: dict, arguments=None):
-#     import pdb; pdb.set_trace()
     d = datetime.datetime.now()
     mill = int(d.microsecond/1000)
     exp_start_time = int(round(time.time() * 1000)) + mill
