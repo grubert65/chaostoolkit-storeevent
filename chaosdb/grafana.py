@@ -66,6 +66,7 @@ def configure_control(c: Configuration, s: Secrets):
     global exp_start_time
     global exp_end_time
     global dashboardId
+    global only_actions
 
     # defaults
     grafana_user = c.get('grafana_user', 'admin')
@@ -76,6 +77,7 @@ def configure_control(c: Configuration, s: Secrets):
     exp_start_time  = int(round(time.time() * 1000))
     exp_end_time    = int(round(time.time() * 1000))
     dashboardId = c.get('dashboardId')
+    only_actions = c.get('only_actions', 0)
 
     return 1
 
@@ -141,6 +143,9 @@ def after_method_control(context: dict, arguments=None):
 
 def before_activity_control(context: dict, arguments=None):
 
+    if ((context['type'] != 'action') and (only_actions == 1)):
+        return 1
+
     tags = [ 
             'chaostoolkit', 
             'activity', 
@@ -163,6 +168,9 @@ def before_activity_control(context: dict, arguments=None):
     return post_event(payload)
 
 def after_activity_control(context: dict, arguments=None):
+
+    if ((context['type'] != 'action') and only_actions == 1):
+            return 1
 
     tags = [ 'chaostoolkit', 'activity', 'after', context['type'], context['name'] ]
 
