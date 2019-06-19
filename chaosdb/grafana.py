@@ -66,6 +66,7 @@ def configure_control(c: Configuration, s: Secrets):
     global exp_start_time
     global exp_end_time
     global dashboardId
+    global only_actions
 
     # defaults
     grafana_user = c.get('grafana_user', 'admin')
@@ -76,6 +77,7 @@ def configure_control(c: Configuration, s: Secrets):
     exp_start_time  = int(round(time.time() * 1000))
     exp_end_time    = int(round(time.time() * 1000))
     dashboardId = c.get('dashboardId')
+    only_actions = c.get('only_actions', 0)
 
     return 1
 
@@ -89,7 +91,6 @@ def running():
 # Note: annotation region around the experiment is sent
 # at experiment end
 def before_experiment_control(context: dict, arguments=None):
-#     import pdb; pdb.set_trace()
     d = datetime.datetime.now()
     mill = int(d.microsecond/1000)
     exp_start_time = int(round(time.time() * 1000)) + mill
@@ -142,7 +143,20 @@ def after_method_control(context: dict, arguments=None):
 
 def before_activity_control(context: dict, arguments=None):
 
-    tags = [ 'chaostoolkit', 'activity', 'before', context['type'], context['name'] ]
+    if ((context['type'] != 'action') and (only_actions == 1)):
+        return 1
+
+    tags = [ 
+            'chaostoolkit', 
+            'activity', 
+            'before', 
+            context['type'], 
+            context['name'] 
+    ]
+
+    if ( context['provider']['type'] == 'python'):
+        tags.append(context['provider']['func'])
+
     text = f"[{context['type']}]:{context['name']}"
 
     payload = {
@@ -155,7 +169,14 @@ def before_activity_control(context: dict, arguments=None):
 
 def after_activity_control(context: dict, arguments=None):
 
+    if ((context['type'] != 'action') and only_actions == 1):
+            return 1
+
     tags = [ 'chaostoolkit', 'activity', 'after', context['type'], context['name'] ]
+
+    if ( context['provider']['type'] == 'python'):
+        tags.append(context['provider']['func'])
+
     text = f"[{context['type']}]:{context['name']}"
 
     payload = {
