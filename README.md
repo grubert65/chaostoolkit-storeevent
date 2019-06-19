@@ -25,9 +25,9 @@ configuration section (the values provided represent the defaults):
 
 ```
     "configuration": {
-      "influx_host": "localhost"
-      "influx_port": 8086
-      "influx_http_endpoint": "/write"
+      "influx_host": "localhost",
+      "influx_port": 8086,
+      "influx_http_endpoint": "/write",
       "influx_database": "gatlingdb"
     }
 ```
@@ -60,11 +60,12 @@ provided):
 
 ```
     "configuration": {
-      "grafana_host": "localhost"
-      "grafana_port": 3000
-      "grafana_annotation_api_endpoint": "/api/annotations"
-      "grafana_user": "admin"
-      "grafana_pass": "admin"
+      "grafana_host": "localhost",
+      "grafana_port": 3000,
+      "grafana_annotation_api_endpoint": "/api/annotations",
+      "grafana_user": "admin",
+      "grafana_pass": "admin",
+      "only_actions": 0
     }
 ```
 
