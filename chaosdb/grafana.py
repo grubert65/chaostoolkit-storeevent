@@ -13,23 +13,6 @@ from logzero import logger
 from chaoslib.types import Configuration, Secrets
 from .utils import can_connect_to
 
-import logging
-
-# Enabling debugging at http.client level (requests->urllib3->http.client)
-# you will see the REQUEST, including HEADERS and DATA, and RESPONSE with HEADERS but without DATA.
-# the only thing missing will be the response.body which is not logged.
-try: # for Python 3
-    from http.client import HTTPConnection
-except ImportError:
-    from httplib import HTTPConnection
-HTTPConnection.debuglevel = 1
-
-logging.basicConfig() # you need to initialize logging, otherwise you will not see anything from requests
-logging.getLogger().setLevel(logging.DEBUG)
-requests_log = logging.getLogger("urllib3")
-requests_log.setLevel(logging.DEBUG)
-requests_log.propagate = True
-
 __all__ = [
     "running",
     "cleanup_control",
@@ -56,7 +39,7 @@ def cleanup_control():
     return 1
 
 
-def configure_control(c: Configuration, s: Secrets):
+def configure_control(configuration: Configuration, secrets: Secrets):
     global grafana_host
     global grafana_port
     global grafana_annotation_api_endpoint
@@ -67,17 +50,21 @@ def configure_control(c: Configuration, s: Secrets):
     global exp_end_time
     global dashboardId
     global only_actions
+    global tags
 
     # defaults
-    grafana_user = c.get('grafana_user', 'admin')
-    grafana_pass = c.get('grafana_pass', 'admin')
-    grafana_host = c.get('grafana_host', 'localhost')
-    grafana_port = c.get('grafana_port', 3000)
-    grafana_annotation_api_endpoint = '/api/annotations'
+    grafana = configuration.get('grafana',{})
+
+    grafana_user    = grafana.get('username', 'admin')
+    grafana_pass    = grafana.get('password', 'admin')
+    grafana_host    = grafana.get('host', 'localhost')
+    grafana_port    = grafana.get('port', 3000)
     exp_start_time  = int(round(time.time() * 1000))
     exp_end_time    = int(round(time.time() * 1000))
-    dashboardId = c.get('dashboardId')
-    only_actions = c.get('only_actions', 0)
+    dashboardId     = grafana.get('dashboardId', 1)
+    only_actions    = grafana.get('only_actions', 0)
+    tags            = grafana.get('tags', [])
+    grafana_annotation_api_endpoint = '/api/annotations'
 
     return 1
 
@@ -100,7 +87,8 @@ def before_experiment_control(context: dict, arguments=None):
 def after_experiment_control(context: dict, arguments=None):
     exp_end_time = int(round(time.time() * 1000))
 
-    tags = [ 'chaostoolkit', 'experiment' ]
+    my_tags = tags
+    my_tags.extend(['chaostoolkit', 'experiment'])
     text = context['title']
 
     payload = {
@@ -108,7 +96,7 @@ def after_experiment_control(context: dict, arguments=None):
       "time": exp_start_time,
       "isRegion": True,
       "timeEnd": exp_end_time,
-      "tags": tags,
+      "tags": my_tags,
       "text": text
     }
 
@@ -117,12 +105,13 @@ def after_experiment_control(context: dict, arguments=None):
 
 def before_method_control(context: dict, arguments=None):
 
-    tags = [ 'chaostoolkit', 'method', 'before', context['description'] ]
+    my_tags = tags
+    my_tags.extend([ 'chaostoolkit', 'method', 'before', context['description'] ])
     text = context['title']
 
     payload = {
       "dashboardId": dashboardId,
-      "tags": tags,
+      "tags": my_tags,
       "text": text
     }
 
@@ -130,12 +119,13 @@ def before_method_control(context: dict, arguments=None):
 
 def after_method_control(context: dict, arguments=None):
 
-    tags = [ 'chaostoolkit', 'method', 'after', context['description'] ]
+    my_tags = tags
+    my_tags.extend([ 'chaostoolkit', 'method', 'after', context['description'] ])
     text = context['title']
 
     payload = {
       "dashboardId": dashboardId,
-      "tags": tags,
+      "tags": my_tags,
       "text": text
     }
 
@@ -146,22 +136,23 @@ def before_activity_control(context: dict, arguments=None):
     if ((context['type'] != 'action') and (only_actions == 1)):
         return 1
 
-    tags = [ 
-            'chaostoolkit', 
-            'activity', 
-            'before', 
-            context['type'], 
-            context['name'] 
-    ]
+    my_tags = tags
+    my_tags.extend([ 
+        'chaostoolkit',
+        'activity', 
+        'before', 
+        context['type'], 
+        context['name'] 
+    ])
 
     if ( context['provider']['type'] == 'python'):
-        tags.append(context['provider']['func'])
+        my_tags.append(context['provider']['func'])
 
     text = f"[{context['type']}]:{context['name']}"
 
     payload = {
       "dashboardId": dashboardId,
-      "tags": tags,
+      "tags": my_tags,
       "text": text
     }
 
@@ -172,16 +163,17 @@ def after_activity_control(context: dict, arguments=None):
     if ((context['type'] != 'action') and only_actions == 1):
             return 1
 
-    tags = [ 'chaostoolkit', 'activity', 'after', context['type'], context['name'] ]
+    my_tags = tags
+    my_tags.extend([ 'chaostoolkit', 'activity', 'after', context['type'], context['name'] ])
 
     if ( context['provider']['type'] == 'python'):
-        tags.append(context['provider']['func'])
+        my_tags.append(context['provider']['func'])
 
     text = f"[{context['type']}]:{context['name']}"
 
     payload = {
       "dashboardId": dashboardId,
-      "tags": tags,
+      "tags": my_tags,
       "text": text
     }
 
@@ -195,13 +187,19 @@ def post_event(payload):
         'Content-Type': 'application/json'
     }
 
+    data=json.dumps(payload)
+    logger.debug("Sending annotation to grafana server {}:{}"
+            .format(grafana_host,grafana_port))
+    logger.debug("Data:\n{}".format(data))
     r = requests.post("http://{}:{}{}".format(
         grafana_host,
         grafana_port,
         grafana_annotation_api_endpoint),
         auth=HTTPBasicAuth(grafana_user, grafana_pass),
         headers=headers,
-        data=json.dumps(payload),
+        data=data,
         timeout=0.5)
     
-    return r.status_code
+    ret = r.status_code
+    logger.debug("Status code: {}".format(ret))
+    return ret

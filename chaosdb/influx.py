@@ -4,23 +4,6 @@ from logzero import logger
 from chaoslib.types import Configuration, Secrets
 from .utils import can_connect_to
 
-import logging
-
-# Enabling debugging at http.client level (requests->urllib3->http.client)
-# you will see the REQUEST, including HEADERS and DATA, and RESPONSE with HEADERS but without DATA.
-# the only thing missing will be the response.body which is not logged.
-try: # for Python 3
-    from http.client import HTTPConnection
-except ImportError:
-    from httplib import HTTPConnection
-HTTPConnection.debuglevel = 1
-
-logging.basicConfig() # you need to initialize logging, otherwise you will not see anything from requests
-logging.getLogger().setLevel(logging.DEBUG)
-requests_log = logging.getLogger("urllib3")
-requests_log.setLevel(logging.DEBUG)
-requests_log.propagate = True
-
 __all__ = [
     "running",
     "cleanup_control",
@@ -46,15 +29,24 @@ def cleanup_control():
     return 1
 
 
-def configure_control(c: Configuration, s: Secrets):
+def configure_control(configuration: Configuration, secrets: Secrets):
     global influx_host
     global influx_port
     global influx_http_endpoint
     global influx_database
-    influx_host          = c["influx_host"]
-    influx_port          = c["influx_port"]
-    influx_http_endpoint = c["influx_http_endpoint"]
-    influx_database      = c["influx_database"]
+
+    influx = Configuration.get('influxdb', {
+        "host": "localhost",
+        "port": 8086,
+        "http_endpoint": "/write",
+        "database": "gatlingdb"
+    })
+
+    influx_host          = influx["host"]
+    influx_port          = influx["port"]
+    influx_http_endpoint = influx["http_endpoint"]
+    influx_database      = influx["database"]
+
     return 1
 
 
@@ -82,16 +74,8 @@ def store_action(scope, provider):
     # using the requests lib
     # scope is a tag 
 
-#     import pdb; pdb.set_trace()
-#     try:
     logger.debug("store_action")
     logger.debug("Scope: {}".format(scope))
-#     import pdb; pdb.set_trace()
-    global influx_host
-    global influx_port
-    global influx_http_endpoint
-    global influx_database
-
     logger.debug("Influx host: {}".format(influx_host))
     logger.debug("Influx port: {}".format(influx_port))
     logger.debug("Influx endpoint: {}".format(influx_http_endpoint))
@@ -115,14 +99,12 @@ def store_action(scope, provider):
         params = {"db":influx_database},
         data = payload)
 
-    if r.status_code != 204:
+    if (r.status_code != 204):
         logger.error("Error sending data to InfluxDB: {}".format(r.json()))
 
     logger.debug("store_action ended")
-#     except:
-#         logger.error("Error inserting action")
-
     return 1
+
 
 # Encodes payload
 # Influx will automatically add the timestamp...
