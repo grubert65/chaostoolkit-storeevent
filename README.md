@@ -25,10 +25,12 @@ configuration section (the values provided represent the defaults):
 
 ```
     "configuration": {
-      "influx_host": "localhost",
-      "influx_port": 8086,
-      "influx_http_endpoint": "/write",
-      "influx_database": "gatlingdb"
+      "influxdb": {
+        "host": "localhost",
+        "port": 8086,
+        "http_endpoint": "/write",
+        "database": "gatlingdb"
+      }
     }
 ```
 
@@ -60,14 +62,22 @@ provided):
 
 ```
     "configuration": {
-      "grafana_host": "localhost",
-      "grafana_port": 3000,
-      "grafana_annotation_api_endpoint": "/api/annotations",
-      "grafana_user": "admin",
-      "grafana_pass": "admin",
-      "only_actions": 0
+      "grafana": {
+        "host": "localhost",
+        "port": 3000,
+        "annotation_api_endpoint": "/api/annotations",
+        "username": "admin",
+        "password": "admin",
+        "dashboardId": 1,
+        "only_actions": 0
+        "tags": []
+      }
     }
 ```
+
+The 'dashboardId' parameter points to the dashboard annotations are added to.
+The 'only_actions' parameter allows to trace only actions, not probes. 
+The 'tags' parameter allows to add custom tags to each annotation.
 
 Refer to the official Grafana documentation for details on how to set up data
 stores for InfluxDB databases. For the Grafana driver just use the default

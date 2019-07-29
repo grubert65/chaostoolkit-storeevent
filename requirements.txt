@@ -1,6 +1,7 @@
 logzero
 requests
-chaostoolkit-lib
+chaostoolkit>=1.2.0
+chaostoolkit-lib>=1.5.0
 pytest
 datetime
 

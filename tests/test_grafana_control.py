@@ -5,12 +5,6 @@ from chaosdb.grafana import running, configure_control, before_activity_control,
 @unittest.skipIf(running() is False, "Test skipped: Grafana server not running")
 class TestControl( unittest.TestCase ):
 
-#     @classmethod
-#     def setUpClass(cls):
-#         os.system('./scripts/influxd.sh')
-#   some initialization...
-
-
     def test_before_activity_control(self):
 
         self.assertEqual(configure_control({}, {} ), 1)
