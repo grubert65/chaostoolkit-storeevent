@@ -87,7 +87,8 @@ def before_experiment_control(context: dict, arguments=None):
 def after_experiment_control(context: dict, arguments=None):
     exp_end_time = int(round(time.time() * 1000))
 
-    my_tags = tags
+    my_tags = []
+    my_tags.extend(tags)
     my_tags.extend(['chaostoolkit', 'experiment'])
     text = context['title']
 
@@ -105,7 +106,8 @@ def after_experiment_control(context: dict, arguments=None):
 
 def before_method_control(context: dict, arguments=None):
 
-    my_tags = tags
+    my_tags = []
+    my_tags.extend(tags)
     my_tags.extend([ 'chaostoolkit', 'method', 'before', context['description'] ])
     text = context['title']
 
@@ -119,7 +121,8 @@ def before_method_control(context: dict, arguments=None):
 
 def after_method_control(context: dict, arguments=None):
 
-    my_tags = tags
+    my_tags = []
+    my_tags.extend(tags)
     my_tags.extend([ 'chaostoolkit', 'method', 'after', context['description'] ])
     text = context['title']
 
@@ -136,7 +139,8 @@ def before_activity_control(context: dict, arguments=None):
     if ((context['type'] != 'action') and (only_actions == 1)):
         return 1
 
-    my_tags = tags
+    my_tags = []
+    my_tags.extend(tags)
     my_tags.extend([ 
         'chaostoolkit',
         'activity', 
@@ -163,8 +167,15 @@ def after_activity_control(context: dict, arguments=None):
     if ((context['type'] != 'action') and only_actions == 1):
             return 1
 
-    my_tags = tags
-    my_tags.extend([ 'chaostoolkit', 'activity', 'after', context['type'], context['name'] ])
+    my_tags = []
+    my_tags.extend(tags)
+    my_tags.extend([ 
+        'chaostoolkit', 
+        'activity', 
+        'after', 
+        context['type'], 
+        context['name'] 
+    ])
 
     if ( context['provider']['type'] == 'python'):
         my_tags.append(context['provider']['func'])
