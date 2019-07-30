@@ -38,10 +38,12 @@ class TestControl( unittest.TestCase ):
     def test_after_activity_control(self):
 
         self.assertEqual(configure_control({
-            "influx_host": "localhost",
-            "influx_port": 8086,
-            "influx_http_endpoint": "/write",
-            "influx_database": "chaostoolkit"
+            "influx": {
+                "host": "localhost",
+                "port": 8086,
+                "http_endpoint": "/write",
+                "database": "chaostoolkit"
+            }
         }, {} ), 1)
 
         context =  {

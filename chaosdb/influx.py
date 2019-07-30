@@ -35,7 +35,7 @@ def configure_control(configuration: Configuration, secrets: Secrets):
     global influx_http_endpoint
     global influx_database
 
-    influx = Configuration.get('influxdb', {
+    influx = configuration.get('influxdb', {
         "host": "localhost",
         "port": 8086,
         "http_endpoint": "/write",
