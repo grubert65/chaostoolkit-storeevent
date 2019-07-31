@@ -68,7 +68,7 @@ provided):
         "username": "admin",
         "password": "admin",
         "dashboardId": 1,
-        "only_actions": 0
+        "only_actions": 0,
         "tags": []
       }
     }
