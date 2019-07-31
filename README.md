@@ -65,11 +65,10 @@ provided):
       "grafana": {
         "host": "localhost",
         "port": 3000,
-        "annotation_api_endpoint": "/api/annotations",
         "username": "admin",
         "password": "admin",
         "dashboardId": 1,
-        "only_actions": 0
+        "only_actions": 0,
         "tags": []
       }
     }
