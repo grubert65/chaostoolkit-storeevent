@@ -65,7 +65,6 @@ provided):
       "grafana": {
         "host": "localhost",
         "port": 3000,
-        "annotation_api_endpoint": "/api/annotations",
         "username": "admin",
         "password": "admin",
         "dashboardId": 1,
