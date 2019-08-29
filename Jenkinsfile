@@ -8,8 +8,8 @@ pipeline {
   stages {
     stage('Install requirements') {
       steps {
-        sh '''pip install -r requirements-dev.txt
-pip install -r requirements.txt'''
+        sh "pip install -r requirements-dev.txt"
+        sh "pip install -r requirements.txt"
       }
     }
   }
