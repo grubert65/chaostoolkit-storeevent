@@ -14,10 +14,11 @@ __all__ = [
 ]
 
 # global defaults
-influx_host         = "localhost"
-influx_port         = 8086
-influx_http_endpoint= "/write"
-influx_database     = "gatlingdb"
+influx_host = "localhost"
+influx_port = 8086
+influx_http_endpoint = "/write"
+influx_database = "gatlingdb"
+
 
 def running():
     """ Test if the InfluxDB server is running """
@@ -42,10 +43,10 @@ def configure_control(configuration: Configuration, secrets: Secrets):
         "database": "gatlingdb"
     })
 
-    influx_host          = influx["host"]
-    influx_port          = influx["port"]
+    influx_host = influx["host"]
+    influx_port = influx["port"]
     influx_http_endpoint = influx["http_endpoint"]
-    influx_database      = influx["database"]
+    influx_database = influx["database"]
 
     return 1
 
@@ -72,7 +73,7 @@ def store_action(scope, provider):
 
     # implement InfluxDB line protocol
     # using the requests lib
-    # scope is a tag 
+    # scope is a tag
 
     logger.debug("store_action")
     logger.debug("Scope: {}".format(scope))
@@ -88,16 +89,16 @@ def store_action(scope, provider):
         payload = encode_payload_in_line_protocol(
             "chaos_toolkit.actions",
             tags={
-                "experiment":"exp1", 
-                "scope":scope
+                "experiment": "exp1",
+                "scope": scope
             },
             fields=provider
         )
 
     r = requests.post("http://{}:{}{}".format(
         influx_host, influx_port, influx_http_endpoint),
-        params = {"db":influx_database},
-        data = payload)
+        params={"db": influx_database},
+        data=payload)
 
     if (r.status_code != 204):
         logger.error("Error sending data to InfluxDB: {}".format(r.json()))
@@ -119,7 +120,7 @@ def encode_payload_in_line_protocol(measurement, fields: dict, tags={}):
     payload = payload + " "
 
 #     import pdb; pdb.set_trace()
-    for k,v in fields.items():
+    for k, v in fields.items():
         if isinstance(v, str):
             payload = "{}{}=\"{}\",".format(payload, k, v)
         elif isinstance(v, dict):
@@ -130,5 +131,3 @@ def encode_payload_in_line_protocol(measurement, fields: dict, tags={}):
 
     payload = payload.rstrip(',')
     return payload
-
-
