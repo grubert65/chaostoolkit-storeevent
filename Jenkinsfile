@@ -14,7 +14,7 @@ pipeline {
       }
     }
 
-    stage('make clean') {
+    stage('Make clean') {
       steps {
         sh 'make clean'
       }
@@ -29,10 +29,16 @@ pipeline {
       }
     }
 
-    stage('Linter') {
+    stage('Code linter') {
       steps {
         sh 'pip install pylama'
         sh 'pylama .'
+      }
+    }
+
+    stage('Make test') {
+      steps {
+        sh 'make test'
       }
     }
 
