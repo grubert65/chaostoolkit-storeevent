@@ -54,7 +54,8 @@ lint: ## check style with flake8
 	flake8 chaostoolkit_storeevent tests
 
 test: ## run tests quickly with the default Python
-	py.test
+	#py.test
+	python -m pytest # calling this way should add current directory to sys.path...
 
 test-all: ## run tests on every Python version with tox
 	tox
