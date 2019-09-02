@@ -82,11 +82,15 @@ def running():
 def before_experiment_control(context: dict, arguments=None):
     d = datetime.datetime.now()
     mill = int(d.microsecond / 1000)
+    global exp_start_time
     exp_start_time = int(round(time.time() * 1000)) + mill
     return 1
 
 
 def after_experiment_control(context: dict, arguments=None):
+    global exp_start_time
+    global exp_end_time
+
     exp_end_time = int(round(time.time() * 1000))
 
     my_tags = []

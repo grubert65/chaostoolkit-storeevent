@@ -1,7 +1,8 @@
 import unittest
-import sys
 import os
-from chaosdb.litedb import configure_control, before_activity_control, after_activity_control
+from chaosdb.litedb import configure_control, \
+                           before_activity_control, \
+                           after_activity_control
 
 
 class TestControl(unittest.TestCase):

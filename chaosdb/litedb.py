@@ -61,7 +61,8 @@ def store_action(scope, provider):
         args = json.dumps(json.dumps(provider['arguments']))
 
     if provider['type'] == 'python':
-        stmt = "INSERT INTO actions (event_time, scope, type, module, func, args) "\
+        stmt = "INSERT INTO actions \
+                (event_time, scope, type, module, func, args) "\
             "VALUES({},'{}','{}','{}','{}','{}')".format(
                 time.time(),
                 scope,

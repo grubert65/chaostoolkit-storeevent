@@ -44,7 +44,8 @@ setup(
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
     ],
-    description="A chaostoolkit control to store events on different data stores/monitoring platfoms",
+    description="A chaostoolkit control \
+ to store events on different data stores/monitoring platfoms",
     install_requires=requirements,
     license="BSD license",
     long_description=readme + '\n\n' + history,
