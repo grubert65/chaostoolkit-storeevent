@@ -1,10 +1,14 @@
 import unittest
 import os
-from chaosdb.litedb import configure_control, \
+from chaosdb.litedb import running, \
+                           configure_control, \
                            before_activity_control, \
                            after_activity_control
 
 
+@unittest.skipIf(
+    running() is False,
+    "Test skipped: Sqlite not found")
 class TestControl(unittest.TestCase):
 
     @classmethod
