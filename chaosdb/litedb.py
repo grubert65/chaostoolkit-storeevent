@@ -2,10 +2,12 @@
 import sqlite3
 import json
 import time
+from shutil import which
 from logzero import logger
 from chaoslib.types import Configuration, Secrets
 
 __all__ = [
+    "running",
     "cleanup_control",
     "configure_control",
     "before_activity_control",
@@ -13,6 +15,10 @@ __all__ = [
 ]
 
 litedb_filename = ""
+
+
+def running():
+    return which('sqlite3')
 
 
 def cleanup_control():
