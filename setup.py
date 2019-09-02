@@ -12,11 +12,12 @@ with open('README.rst') as readme_file:
 with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
-requirements = [ ]
+requirements = []
 
 setup_requirements = ['pytest-runner', ]
 
 test_requirements = ['pytest', ]
+
 
 def get_version_from_package() -> str:
     path = os.path.join(os.path.dirname(__file__), "chaosdb/__init__.py")

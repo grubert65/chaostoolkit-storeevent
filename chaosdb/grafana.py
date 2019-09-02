@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 # a chaosdb control class to write events directly into grafana data store as
 # annotations using the annotations HTTP API
-# The "time" (millisecs since epoch) attribute can be added to each payload 
-# to set the annotation time, if missing grafana will consider it's process time for the event.
+# The "time" (millisecs since epoch) attribute can be added to each payload
+# to set the annotation time, if missing grafana will consider it's
+# process time for the event.
 
 import requests
 import json
@@ -32,8 +33,9 @@ grafana_port = 3000
 grafana_annotation_api_endpoint = '/api/annotations'
 grafana_user = 'admin'
 grafana_pass = 'admin'
-exp_start_time  = int(round(time.time() * 1000))
-exp_end_time    = int(round(time.time() * 1000))
+exp_start_time = int(round(time.time() * 1000))
+exp_end_time = int(round(time.time() * 1000))
+
 
 def cleanup_control():
     return 1
@@ -53,17 +55,17 @@ def configure_control(configuration: Configuration, secrets: Secrets):
     global tags
 
     # defaults
-    grafana = configuration.get('grafana',{})
+    grafana = configuration.get('grafana', {})
 
-    grafana_user    = grafana.get('username', 'admin')
-    grafana_pass    = grafana.get('password', 'admin')
-    grafana_host    = grafana.get('host', 'localhost')
-    grafana_port    = grafana.get('port', 3000)
-    exp_start_time  = int(round(time.time() * 1000))
-    exp_end_time    = int(round(time.time() * 1000))
-    dashboardId     = grafana.get('dashboardId', 1)
-    only_actions    = grafana.get('only_actions', 0)
-    tags            = grafana.get('tags', [])
+    grafana_user = grafana.get('username', 'admin')
+    grafana_pass = grafana.get('password', 'admin')
+    grafana_host = grafana.get('host', 'localhost')
+    grafana_port = grafana.get('port', 3000)
+    exp_start_time = int(round(time.time() * 1000))
+    exp_end_time = int(round(time.time() * 1000))
+    dashboardId = grafana.get('dashboardId', 1)
+    only_actions = grafana.get('only_actions', 0)
+    tags = grafana.get('tags', [])
     grafana_annotation_api_endpoint = '/api/annotations'
 
     return 1
@@ -79,7 +81,7 @@ def running():
 # at experiment end
 def before_experiment_control(context: dict, arguments=None):
     d = datetime.datetime.now()
-    mill = int(d.microsecond/1000)
+    mill = int(d.microsecond / 1000)
     exp_start_time = int(round(time.time() * 1000)) + mill
     return 1
 
@@ -93,12 +95,12 @@ def after_experiment_control(context: dict, arguments=None):
     text = context['title']
 
     payload = {
-      "dashboardId": dashboardId,
-      "time": exp_start_time,
-      "isRegion": True,
-      "timeEnd": exp_end_time,
-      "tags": my_tags,
-      "text": text
+        "dashboardId": dashboardId,
+        "time": exp_start_time,
+        "isRegion": True,
+        "timeEnd": exp_end_time,
+        "tags": my_tags,
+        "text": text
     }
 
     return post_event(payload)
@@ -108,31 +110,34 @@ def before_method_control(context: dict, arguments=None):
 
     my_tags = []
     my_tags.extend(tags)
-    my_tags.extend([ 'chaostoolkit', 'method', 'before', context['description'] ])
+    my_tags.extend(['chaostoolkit', 'method',
+                    'before', context['description']])
     text = context['title']
 
     payload = {
-      "dashboardId": dashboardId,
-      "tags": my_tags,
-      "text": text
+        "dashboardId": dashboardId,
+        "tags": my_tags,
+        "text": text
     }
 
     return post_event(payload)
+
 
 def after_method_control(context: dict, arguments=None):
 
     my_tags = []
     my_tags.extend(tags)
-    my_tags.extend([ 'chaostoolkit', 'method', 'after', context['description'] ])
+    my_tags.extend(['chaostoolkit', 'method', 'after', context['description']])
     text = context['title']
 
     payload = {
-      "dashboardId": dashboardId,
-      "tags": my_tags,
-      "text": text
+        "dashboardId": dashboardId,
+        "tags": my_tags,
+        "text": text
     }
 
     return post_event(payload)
+
 
 def before_activity_control(context: dict, arguments=None):
 
@@ -141,51 +146,52 @@ def before_activity_control(context: dict, arguments=None):
 
     my_tags = []
     my_tags.extend(tags)
-    my_tags.extend([ 
+    my_tags.extend([
         'chaostoolkit',
-        'activity', 
-        'before', 
-        context['type'], 
-        context['name'] 
+        'activity',
+        'before',
+        context['type'],
+        context['name']
     ])
 
-    if ( context['provider']['type'] == 'python'):
+    if (context['provider']['type'] == 'python'):
         my_tags.append(context['provider']['func'])
 
     text = f"[{context['type']}]:{context['name']}"
 
     payload = {
-      "dashboardId": dashboardId,
-      "tags": my_tags,
-      "text": text
+        "dashboardId": dashboardId,
+        "tags": my_tags,
+        "text": text
     }
 
     return post_event(payload)
 
+
 def after_activity_control(context: dict, arguments=None):
 
     if ((context['type'] != 'action') and only_actions == 1):
-            return 1
+        return 1
 
     my_tags = []
     my_tags.extend(tags)
-    my_tags.extend([ 
-        'chaostoolkit', 
-        'activity', 
-        'after', 
-        context['type'], 
-        context['name'] 
+    my_tags.extend([
+        'chaostoolkit',
+        'activity',
+        'after',
+        context['type'],
+        context['name']
     ])
 
-    if ( context['provider']['type'] == 'python'):
+    if (context['provider']['type'] == 'python'):
         my_tags.append(context['provider']['func'])
 
     text = f"[{context['type']}]:{context['name']}"
 
     payload = {
-      "dashboardId": dashboardId,
-      "tags": my_tags,
-      "text": text
+        "dashboardId": dashboardId,
+        "tags": my_tags,
+        "text": text
     }
 
     return post_event(payload)
@@ -194,13 +200,13 @@ def after_activity_control(context: dict, arguments=None):
 def post_event(payload):
 
     headers = {
-        'Accept': 'application/json', 
+        'Accept': 'application/json',
         'Content-Type': 'application/json'
     }
 
-    data=json.dumps(payload)
+    data = json.dumps(payload)
     logger.debug("Sending annotation to grafana server {}:{}"
-            .format(grafana_host,grafana_port))
+                 .format(grafana_host, grafana_port))
     logger.debug("Data:\n{}".format(data))
     r = requests.post("http://{}:{}{}".format(
         grafana_host,
@@ -210,7 +216,7 @@ def post_event(payload):
         headers=headers,
         data=data,
         timeout=0.5)
-    
+
     ret = r.status_code
     logger.debug("Status code: {}".format(ret))
     return ret

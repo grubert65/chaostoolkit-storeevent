@@ -14,12 +14,13 @@ __all__ = [
 
 litedb_filename = ""
 
+
 def cleanup_control():
     return 1
 
 
 def configure_control(c: Configuration, s: Secrets):
-#     import pdb; pdb.set_trace()
+    #     import pdb; pdb.set_trace()
     global litedb_filename
     litedb_filename = c["litedb_filename"]
     return 1
@@ -45,7 +46,7 @@ def before_activity_control(context: dict, arguments=None):
 
 def store_action(scope, provider):
 
-#     try:
+    #     try:
     logger.debug("store_action")
     logger.debug("Scope: {}".format(scope))
 #     import pdb; pdb.set_trace()

@@ -14,6 +14,21 @@ pipeline {
       }
     }
 
+    stage('make clean') {
+      steps {
+        sh 'make clean'
+      }
+    }
+
+    stage('Code formatter') {
+      steps {
+        sh 'pip install autopep8'
+        sh 'autopep8 --in-place --aggressive --aggressive *.py'
+        sh 'autopep8 --in-place --aggressive --aggressive chaosdb/*.py'
+        sh 'autopep8 --in-place --aggressive --aggressive tests/*.py'
+      }
+    }
+
     stage('Linter') {
       steps {
         sh 'pip install pylama'
