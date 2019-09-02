@@ -7,7 +7,7 @@ from chaosdb.litedb import running, \
 
 
 @unittest.skipIf(
-    running() is False,
+    running() is None,
     "Test skipped: Sqlite not found")
 class TestControl(unittest.TestCase):
 
