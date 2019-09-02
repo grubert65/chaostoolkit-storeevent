@@ -1,6 +1,4 @@
 import unittest
-import sys
-import os
 from chaosdb.influx import encode_payload_in_line_protocol
 
 

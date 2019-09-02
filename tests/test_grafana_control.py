@@ -1,7 +1,8 @@
 import unittest
-import sys
-import os
-from chaosdb.grafana import running, configure_control, before_activity_control, after_activity_control
+from chaosdb.grafana import running,                    \
+                            configure_control,          \
+                            before_activity_control,    \
+                            after_activity_control
 
 
 @unittest.skipIf(
