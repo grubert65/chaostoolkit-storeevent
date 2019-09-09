@@ -53,9 +53,10 @@ pipeline {
             branch 'add-jenkinsfile'
         }
         steps {
-            withCredentials([usernamePassword(credentialsId:'Pypi_credentials', usernameVariable:'PYPI_USER_NAME', passwordVariable:'PYPI_PASSWORD')])
-            make dist
-            make release
+            withCredentials([usernamePassword(credentialsId:'Pypi_credentials', usernameVariable:'PYPI_USER_NAME', passwordVariable:'PYPI_PASSWORD')]) {
+                make dist
+                make release
+            }
         }
     }
 
