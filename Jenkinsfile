@@ -50,7 +50,7 @@ pipeline {
 
     stage('Make distribution') {
         when {
-            branch 'master'
+            branch 'add-jenkinsfile'
         }
         steps {
             withCredentials([usernamePassword(credentialsId:'Pypi_credentials', usernameVariable:'PYPI_USER_NAME', passwordVariable:'PYPI_PASSWORD')])
