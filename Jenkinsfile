@@ -42,5 +42,22 @@ pipeline {
       }
     }
 
+    stage('Make install') {
+      steps {
+        sh 'make install'
+      }
+    }
+
+    stage('Make distribution') {
+        when {
+            branch 'master'
+        }
+        steps {
+            withCredentials([usernamePassword(credentialsId:'Pypi_credentials', usernameVariable:'PYPI_USER_NAME', passwordVariable:'PYPI_PASSWORD')])
+            make dist
+            make release
+        }
+    }
+
   }
 }
