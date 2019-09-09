@@ -54,8 +54,8 @@ pipeline {
         }
         steps {
             withCredentials([usernamePassword(credentialsId:'Pypi_credentials', usernameVariable:'PYPI_USER_NAME', passwordVariable:'PYPI_PASSWORD')]) {
-                make dist
-                make release
+                sh 'make dist'
+                sh 'make release'
             }
         }
     }
