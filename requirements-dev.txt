@@ -4,3 +4,4 @@ pycodestyle
 pytest
 datetime
 cmarkgfm
+twine
