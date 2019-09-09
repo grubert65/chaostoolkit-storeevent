@@ -79,7 +79,7 @@ servedocs: docs ## compile the docs watching for changes
 
 release: dist ## package and upload a release
 	echo ${PYPI_USER_NAME}
-	twine upload -u ${PYPI_USER_NAME} -p ${PYPI_PASSWORD} --verbose dist/*
+	twine upload -u ${PYPI_USER_NAME} -p ${PYPI_PASSWORD} --skip-existing --verbose dist/*
 
 dist: clean ## builds source and wheel package
 	python setup.py sdist
