@@ -42,15 +42,9 @@ pipeline {
       }
     }
 
-    stage('Make install') {
-      steps {
-        sh 'make install'
-      }
-    }
-
-    stage('Make distribution') {
+    stage('Release') {
         when {
-            branch 'add-jenkinsfile'
+            branch 'master'
         }
         steps {
             withCredentials([usernamePassword(credentialsId:'Pypi_credentials', usernameVariable:'PYPI_USER_NAME', passwordVariable:'PYPI_PASSWORD')]) {
