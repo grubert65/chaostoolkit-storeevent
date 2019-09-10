@@ -47,6 +47,7 @@ pipeline {
             branch 'master'
         }
         steps {
+            echo 'Releasing...'
             withCredentials([usernamePassword(credentialsId:'Pypi_credentials', usernameVariable:'PYPI_USER_NAME', passwordVariable:'PYPI_PASSWORD')]) {
                 sh 'make dist'
                 sh 'make release'
