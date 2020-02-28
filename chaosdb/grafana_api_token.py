@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 # a chaosdb control class to write events directly into grafana data store as
-# annotations using the annotations HTTP API
+# annotations using the annotations HTTPS API
+# Authenticates using a "bearer" API TOKEN that needs to be generated via 
+# the grafana admin dashboard.
 # The "time" (millisecs since epoch) attribute can be added to each payload
 # to set the annotation time, if missing grafana will consider it's
 # process time for the event.
 
 import requests
 import json
-from requests.auth import HTTPBasicAuth
 import time
 import datetime
 from logzero import logger
@@ -31,8 +32,6 @@ __all__ = [
 grafana_host = 'localhost'
 grafana_port = 3000
 grafana_annotation_api_endpoint = '/api/annotations'
-grafana_user = 'admin'
-grafana_pass = 'admin'
 exp_start_time = int(round(time.time() * 1000))
 exp_end_time = int(round(time.time() * 1000))
 
@@ -44,9 +43,9 @@ def cleanup_control():
 def configure_control(configuration: Configuration, secrets: Secrets):
     global grafana_host
     global grafana_port
+    global api_token
+    global protocol
     global grafana_annotation_api_endpoint
-    global grafana_user
-    global grafana_pass
 
     global exp_start_time
     global exp_end_time
@@ -55,17 +54,17 @@ def configure_control(configuration: Configuration, secrets: Secrets):
     global tags
 
     # defaults
-    grafana = configuration.get('grafana', {})
+    grafana = configuration.get('grafana_api_token', {})
 
-    grafana_user = grafana.get('username', 'admin')
-    grafana_pass = grafana.get('password', 'admin')
-    grafana_host = grafana.get('host', 'localhost')
-    grafana_port = grafana.get('port', 3000)
-    exp_start_time = int(round(time.time() * 1000))
-    exp_end_time = int(round(time.time() * 1000))
-    dashboardId = grafana.get('dashboardId', 1)
-    only_actions = grafana.get('only_actions', 0)
-    tags = grafana.get('tags', [])
+    grafana_host    = grafana.get('host', 'localhost')
+    grafana_port    = grafana.get('port', 3000)
+    protocol        = grafana.get('protocol', 'http')
+    api_token       = grafana.get('api_token', '')
+    exp_start_time  = int(round(time.time() * 1000))
+    exp_end_time    = int(round(time.time() * 1000))
+    dashboardId     = grafana.get('dashboardId')
+    only_actions    = grafana.get('only_actions', 0)
+    tags            = grafana.get('tags', [])
     grafana_annotation_api_endpoint = '/api/annotations'
 
     return 1
@@ -205,18 +204,19 @@ def post_event(payload):
 
     headers = {
         'Accept': 'application/json',
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Authentication': 'Bearer '+ api_token
     }
 
     data = json.dumps(payload)
     logger.debug("Sending annotation to grafana server {}:{}"
                  .format(grafana_host, grafana_port))
     logger.debug("Data:\n{}".format(data))
-    r = requests.post("http://{}:{}{}".format(
+    r = requests.post("{}://{}:{}{}".format(
+        protocol,
         grafana_host,
         grafana_port,
         grafana_annotation_api_endpoint),
-        auth=HTTPBasicAuth(grafana_user, grafana_pass),
         headers=headers,
         data=data,
         timeout=0.5)

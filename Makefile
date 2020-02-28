@@ -54,7 +54,8 @@ lint: ## check style with flake8
 	flake8 chaostoolkit_storeevent tests
 
 test: ## run tests quickly with the default Python
-	py.test
+	#py.test
+	python -m pytest # calling this way should add current directory to sys.path...
 
 test-all: ## run tests on every Python version with tox
 	tox
@@ -77,7 +78,8 @@ servedocs: docs ## compile the docs watching for changes
 	watchmedo shell-command -p '*.rst' -c '$(MAKE) -C docs html' -R -D .
 
 release: dist ## package and upload a release
-	twine upload dist/*
+	echo ${PYPI_USER_NAME}
+	twine upload -u ${PYPI_USER_NAME} -p ${PYPI_PASSWORD} --skip-existing --verbose dist/*
 
 dist: clean ## builds source and wheel package
 	python setup.py sdist

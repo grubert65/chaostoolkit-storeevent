@@ -3,3 +3,5 @@ coverage
 pycodestyle
 pytest
 datetime
+cmarkgfm
+twine
