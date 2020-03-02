@@ -8,6 +8,10 @@ The control currently implements the following drivers:
 * an influx driver to store events on a InfluxDB time series database
 * a grafana driver to store events on a Grafana server as annotations
 
+The grafana driver comes in 2 flavours:
+- grafana: supports basic auth (username/password)
+- grafana_api_token: authenticates to the grafana server using a bearer API token
+
 To understand what a chaos-toolkit control is please refer to the official 
 documentation on [controls](https://docs.chaostoolkit.org/reference/api/experiment/#controls).
 
@@ -81,3 +85,55 @@ The 'tags' parameter allows to add custom tags to each annotation.
 Refer to the official Grafana documentation for details on how to set up data
 stores for InfluxDB databases. For the Grafana driver just use the default
 grafana data store when configuring the annotations for your dashboard.
+
+Then, at the proper level, configure the control driver:
+
+```
+            "controls": [
+                {
+                    "name": "tracing",
+                    "provider": {
+                        "type": "python",
+                        "module": "chaosdb.grafana"
+                    }
+                }
+            ],
+```
+
+
+
+## The Grafana driver supporting API token authentication
+
+The grafana_api_token driver accepts the following configuration parameters (defaults
+provided):
+
+
+```
+    "configuration": {
+      "grafana_api_token": {
+        "host": "localhost",
+        "port": 3000,
+        "protocol": "https",
+        "api_token": "...",
+        "dashboardId": 1,
+        "only_actions": 0,
+        "tags": []
+      }
+    }
+```
+
+Then, at the proper level, configure the control driver:
+
+```
+            "controls": [
+                {
+                    "name": "tracing",
+                    "provider": {
+                        "type": "python",
+                        "module": "chaosdb.grafana_api_token"
+                    }
+                }
+            ],
+```
+
+
