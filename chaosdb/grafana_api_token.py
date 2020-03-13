@@ -211,15 +211,21 @@ def post_event(payload):
     data = json.dumps(payload)
     logger.debug("Sending annotation to grafana server {}:{}"
                  .format(grafana_host, grafana_port))
-    logger.debug("Data:\n{}".format(data))
-    r = requests.post("{}://{}:{}{}".format(
+    url = "{}://{}:{}{}".format(
         protocol,
         grafana_host,
         grafana_port,
-        grafana_annotation_api_endpoint),
+        grafana_annotation_api_endpoint)
+
+    logger.debug("URL: \n{}".format(url))
+    logger.debug("Data:\n{}".format(data))
+
+    r = requests.post(
+        url,
         headers=headers,
         data=data,
-        timeout=0.5)
+        verify=False,
+        timeout=1)
 
     ret = r.status_code
     logger.debug("Status code: {}".format(ret))
