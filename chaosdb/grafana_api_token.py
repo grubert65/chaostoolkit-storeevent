@@ -56,12 +56,13 @@ def configure_control(configuration: Configuration, secrets: Secrets):
 
     # defaults
     grafana = configuration.get('grafana_api_token', {})
+    grafana_secrets = secrets.get('grafana', {})
 
     grafana_host    = grafana.get('host', 'localhost')
     grafana_port    = grafana.get('port', 3000)
     protocol        = grafana.get('protocol', 'http')
     cert_file       = grafana.get('cert_file', None)
-    api_token       = grafana.get('api_token', '')
+    api_token       = grafana_secrets.get('api_token', '') if grafana_secrets else grafana.get('api_token', '')
     exp_start_time  = int(round(time.time() * 1000))
     exp_end_time    = int(round(time.time() * 1000))
     dashboardId     = grafana.get('dashboardId')
