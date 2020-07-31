@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # a chaosdb control class to write events directly into grafana data store as
 # annotations using the annotations HTTPS API
-# Authenticates using a "bearer" API TOKEN that needs to be generated via 
+# Authenticates using a "bearer" API TOKEN that needs to be generated via
 # the grafana admin dashboard.
 # The "time" (millisecs since epoch) attribute can be added to each payload
 # to set the annotation time, if missing grafana will consider it's
@@ -56,12 +56,13 @@ def configure_control(configuration: Configuration, secrets: Secrets):
 
     # defaults
     grafana = configuration.get('grafana_api_token', {})
+    token = secrets.get('grafana', {}).get('api_token', {})
 
     grafana_host    = grafana.get('host', 'localhost')
     grafana_port    = grafana.get('port', 3000)
     protocol        = grafana.get('protocol', 'http')
     cert_file       = grafana.get('cert_file', None)
-    api_token       = grafana.get('api_token', '')
+    api_token       = token if token else grafana.get('api_token', '')
     exp_start_time  = int(round(time.time() * 1000))
     exp_end_time    = int(round(time.time() * 1000))
     dashboardId     = grafana.get('dashboardId')
@@ -222,7 +223,6 @@ def post_event(payload):
     logger.debug("URL: {}".format(url))
     logger.debug("Data:{}".format(data))
     logger.debug("Cert file: " + cert_file if cert_file else "No file")
-
 
     r = requests.post(
         url,

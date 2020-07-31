@@ -122,6 +122,8 @@ provided):
     }
 ```
 
+
+
 Then, at the proper level, configure the control driver:
 
 ```
@@ -136,4 +138,17 @@ Then, at the proper level, configure the control driver:
             ],
 ```
 
+### Using Secrets in the Grafana API Token Driver
 
+The grafana_api_token driver can optionally accept a secrets value for the api_token attribute. Secret must use "grafana" as target and "api_token" as secret name. If the api_token attribute is specified both in the configuration and as a secret, the secret value will take precedence:
+
+
+```
+    "secrets": {
+      "grafana": {
+        "api_token": {
+          "type": "env",
+          "key": "GRAFANA_API_TOKEN"
+      }
+    }
+```
