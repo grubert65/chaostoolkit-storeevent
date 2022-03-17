@@ -31,8 +31,8 @@ __all__ = [
 grafana_host = 'localhost'
 grafana_port = 3000
 grafana_annotation_api_endpoint = '/api/annotations'
-grafana_user = 'admin'
-grafana_pass = 'admin'
+grafana_user = None
+grafana_pass = None
 exp_start_time = int(round(time.time() * 1000))
 exp_end_time = int(round(time.time() * 1000))
 
@@ -57,8 +57,8 @@ def configure_control(configuration: Configuration, secrets: Secrets):
     # defaults
     grafana = configuration.get('grafana', {})
 
-    grafana_user = grafana.get('username', 'admin')
-    grafana_pass = grafana.get('password', 'admin')
+    grafana_user = grafana.get('username')
+    grafana_pass = grafana.get('password')
     grafana_host = grafana.get('host', 'localhost')
     grafana_port = grafana.get('port', 3000)
     exp_start_time = int(round(time.time() * 1000))
@@ -216,10 +216,10 @@ def post_event(payload):
         grafana_host,
         grafana_port,
         grafana_annotation_api_endpoint),
-        auth=HTTPBasicAuth(grafana_user, grafana_pass),
+        auth=HTTPBasicAuth(grafana_user, grafana_pass) if grafana_user else None,
         headers=headers,
         data=data,
-        timeout=0.5)
+        timeout=5)
 
     ret = r.status_code
     logger.debug("Status code: {}".format(ret))
