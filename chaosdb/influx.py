@@ -10,7 +10,7 @@ __all__ = [
     "configure_control",
     "before_activity_control",
     "after_activity_control",
-    "encode_payload_in_line_protocol"
+    "encode_payload_in_line_protocol",
 ]
 
 # global defaults
@@ -21,7 +21,7 @@ influx_database = "gatlingdb"
 
 
 def running():
-    """ Test if the InfluxDB server is running """
+    """Test if the InfluxDB server is running"""
 
     return can_connect_to(influx_host, influx_port)
 
@@ -36,12 +36,15 @@ def configure_control(configuration: Configuration, secrets: Secrets):
     global influx_http_endpoint
     global influx_database
 
-    influx = configuration.get('influxdb', {
-        "host": "localhost",
-        "port": 8086,
-        "http_endpoint": "/write",
-        "database": "gatlingdb"
-    })
+    influx = configuration.get(
+        "influxdb",
+        {
+            "host": "localhost",
+            "port": 8086,
+            "http_endpoint": "/write",
+            "database": "gatlingdb",
+        },
+    )
 
     influx_host = influx["host"]
     influx_port = influx["port"]
@@ -52,19 +55,19 @@ def configure_control(configuration: Configuration, secrets: Secrets):
 
 
 def after_activity_control(context: dict, arguments=None):
-    if context['type'] == 'probe':
+    if context["type"] == "probe":
         return 1
 
-    provider = context['provider']
+    provider = context["provider"]
 
     return store_action("after", provider)
 
 
 def before_activity_control(context: dict, arguments=None):
-    if context['type'] == 'probe':
+    if context["type"] == "probe":
         return 1
 
-    provider = context['provider']
+    provider = context["provider"]
 
     return store_action("before", provider)
 
@@ -84,23 +87,21 @@ def store_action(scope, provider):
 
     payload = ""
 
-# TODO the measurement should contains the experiment name label
-    if provider['type'] == 'python':
+    # TODO the measurement should contains the experiment name label
+    if provider["type"] == "python":
         payload = encode_payload_in_line_protocol(
             "chaos_toolkit.actions",
-            tags={
-                "experiment": "exp1",
-                "scope": scope
-            },
-            fields=provider
+            tags={"experiment": "exp1", "scope": scope},
+            fields=provider,
         )
 
-    r = requests.post("http://{}:{}{}".format(
-        influx_host, influx_port, influx_http_endpoint),
+    r = requests.post(
+        "http://{}:{}{}".format(influx_host, influx_port, influx_http_endpoint),
         params={"db": influx_database},
-        data=payload)
+        data=payload,
+    )
 
-    if (r.status_code != 204):
+    if r.status_code != 204:
         logger.error("Error sending data to InfluxDB: {}".format(r.json()))
 
     logger.debug("store_action ended")
@@ -119,15 +120,15 @@ def encode_payload_in_line_protocol(measurement, fields: dict, tags={}):
 
     payload = payload + " "
 
-#     import pdb; pdb.set_trace()
+    #     import pdb; pdb.set_trace()
     for k, v in fields.items():
         if isinstance(v, str):
-            payload = "{}{}=\"{}\",".format(payload, k, v)
+            payload = '{}{}="{}",'.format(payload, k, v)
         elif isinstance(v, dict):
             # TODO : we have to encode dicts properly...
             continue
         else:
             payload = "{}{}={},".format(payload, k, v)
 
-    payload = payload.rstrip(',')
+    payload = payload.rstrip(",")
     return payload

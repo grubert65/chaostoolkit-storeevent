@@ -52,7 +52,7 @@ clean-test: ## remove test and coverage artifacts
 	find . -name '*.log' -exec rm -f {} +
 
 lint: ## check style with flake8
-	flake8 chaostoolkit_storeevent tests
+	flake8 chaosdb tests
 
 test: ## run tests quickly with the default Python
 	#py.test
