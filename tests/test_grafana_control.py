@@ -1,46 +1,107 @@
-import unittest
+import pytest
+import responses
 from chaosdb.grafana import running,                    \
                             configure_control,          \
                             before_activity_control,    \
-                            after_activity_control
+                            after_activity_control,     \
+                            post_event
 
 
-@unittest.skipIf(
-    running() is False,
-    "Test skipped: Grafana server not running")
-class TestControl(unittest.TestCase):
+@responses.activate
+def test_before_activity_control():
+    responses.add(responses.POST,
+                  'http://localhost:80/api/annotations',
+                  json={
+                    "message":"Annotation added",
+                    "id": 1,
+                  },
+                  status=200)
+    responses.add(responses.POST,
+                  'https://localhost:443/api/annotations',
+                  json={
+                    "message":"Annotation added",
+                    "id": 1,
+                  },
+                  status=200)
 
-    def test_before_activity_control(self):
+    assert configure_control({
+        "grafana": [{
+            "dashboardId": 0,
+            "host": "localhost",
+            "port": 80,
+            "protocol": "http",
+            "tags": [
+              "P2"
+            ]
+          },{
+             "api_token": "token",
+             "dashboardId": 0,
+             "host": "localhost",
+             "port": 443,
+             "protocol": "https",
+             "tags": [
+              "P2"
+            ]
+          }]
+        }, {}) == 1
 
-        self.assertEqual(configure_control({}, {}), 1)
-
-        context = {
-            "type": "action",
-            "name": "test action",
-            "provider": {
-                "type": "python",
-                "module": "foo",
-                "func": "bar",
-                "arguments": {"foo": "bar"}
-            }
+    context = {
+        "type": "action",
+        "name": "test action",
+        "provider": {
+            "type": "python",
+            "module": "chaosdb.grafana",
+            "func": "bar",
+            "arguments": {"foo": "bar"}
         }
-        self.assertEqual(before_activity_control(context, {}), 200)
+    }
+    assert before_activity_control(context, {}) == 1
 
-    def test_after_activity_control(self):
+@responses.activate
+def test_after_activity_control():
+    responses.add(responses.POST,
+                  'http://localhost:80/api/annotations',
+                  json={
+                    "message":"Annotation added",
+                    "id": 1,
+                  },
+                  status=200)
+    responses.add(responses.POST,
+                  'https://localhost:443/api/annotations',
+                  json={
+                    "message":"Annotation added",
+                    "id": 1,
+                  },
+                  status=200)
 
-        self.assertEqual(configure_control({}, {}), 1)
+    assert configure_control({
+        "grafana": [{
+            "dashboardId": 0,
+            "host": "localhost",
+            "port": 80,
+            "protocol": "http",
+            "tags": [
+              "P2"
+            ]
+          },{
+             "api_token": "token",
+             "dashboardId": 0,
+             "host": "localhost",
+             "port": 443,
+             "protocol": "https",
+             "tags": [
+              "P2"
+            ]
+          }]
+    }, {}) == 1
 
-        context = {
-            "type": "action",
-            "name": "test action",
-            "provider": {
-                "type": "python",
-                "module": "foo",
-                "func": "bar"
-            }
+    context = {
+        "type": "action",
+        "name": "test action",
+        "provider": {
+            "type": "python",
+            "module": "foo",
+            "func": "bar"
         }
-        self.assertEqual(after_activity_control(context, {}), 200)
-
-
-if __name__ == "__main__":
-    unittest.main()
+    }
+    assert after_activity_control(context, {}) == 1

@@ -8,9 +8,9 @@ The control currently implements the following drivers:
 * an influx driver to store events on a InfluxDB time series database
 * a grafana driver to store events on a Grafana server as annotations
 
-The grafana driver comes in 2 flavours:
-- grafana: supports basic auth (username/password)
-- grafana_api_token: authenticates to the grafana server using a bearer API token
+The grafana driver supports the following authentication types:
+- basic auth (username/password)
+- bearer API token
 
 To understand what a chaos-toolkit control is please refer to the official 
 documentation on [controls](https://docs.chaostoolkit.org/reference/api/experiment/#controls).
@@ -60,25 +60,27 @@ the Annotation HTTP API.
 Moreover it is able to draw a region annotation around the whole experiment,
 making experiment visualization more visible.
 
-The grafana driver accepts the following configuration parameters (defaults
-provided):
+The grafana configuration section is keyed `"grafana"`.
+The grafana driver accepts a list of configuration sections, one for each
+grafana server you want to send annotations to.
+Each section accepts the following configuration attributes:
 
+|Attribute|Description|
+|---------|-----------|
+|host              | the grafana server fqdn|
+|port              | the grafana service port|
+|protocol          | http/https (defaults to http if not set)|
+|api_token         | grafana API token|
+|cert_file         | file where the TSL certificate is stored|
+|username          | the simple auth user name|
+|password          | the simple auth password|
+|dashboardId       | a specific dashboard ID (all in case it's not specified)|
+|only_actions      | a boolean flag to send only actions or probes as well (defaults to false)|
+|tags              | a list of custom tags to tag annotations|
+annotation_api_endpoint| defaults to '/api/annotations'|
 
-```
-    "configuration": {
-      "grafana": {
-        "host": "localhost",
-        "port": 3000,
-        "username": "admin",
-        "password": "admin",
-        "dashboardId": 1,
-        "only_actions": 0,
-        "tags": []
-      }
-    }
-```
-
-The 'dashboardId' parameter points to the dashboard annotations are added to.
+The 'dashboardId' parameter points to the dashboard annotations are added to,
+otherwise annotations will be displayed on all dashboards.
 The 'only_actions' parameter allows to trace only actions, not probes. 
 The 'tags' parameter allows to add custom tags to each annotation.
 
@@ -99,41 +101,3 @@ Then, at the proper level, configure the control driver:
                 }
             ],
 ```
-
-
-
-## The Grafana driver supporting API token authentication
-
-The grafana_api_token driver accepts the following configuration parameters (defaults
-provided):
-
-
-```
-    "configuration": {
-      "grafana_api_token": {
-        "host": "localhost",
-        "port": 3000,
-        "protocol": "https",
-        "api_token": "...",
-        "dashboardId": 1,
-        "only_actions": 0,
-        "tags": []
-      }
-    }
-```
-
-Then, at the proper level, configure the control driver:
-
-```
-            "controls": [
-                {
-                    "name": "tracing",
-                    "provider": {
-                        "type": "python",
-                        "module": "chaosdb.grafana_api_token"
-                    }
-                }
-            ],
-```
-
-
