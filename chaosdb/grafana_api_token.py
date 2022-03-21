@@ -45,6 +45,7 @@ def configure_control(configuration: Configuration, secrets: Secrets):
     global grafana_port
     global api_token
     global protocol
+    global cert_file
     global grafana_annotation_api_endpoint
 
     global exp_start_time
@@ -59,6 +60,7 @@ def configure_control(configuration: Configuration, secrets: Secrets):
     grafana_host    = grafana.get('host', 'localhost')
     grafana_port    = grafana.get('port', 3000)
     protocol        = grafana.get('protocol', 'http')
+    cert_file       = grafana.get('cert_file', None)
     api_token       = grafana.get('api_token', '')
     exp_start_time  = int(round(time.time() * 1000))
     exp_end_time    = int(round(time.time() * 1000))
@@ -205,21 +207,29 @@ def post_event(payload):
     headers = {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
-        'Authentication': 'Bearer '+ api_token
+        'Authorization': 'Bearer '+ api_token if api_token else None
     }
 
     data = json.dumps(payload)
     logger.debug("Sending annotation to grafana server {}:{}"
                  .format(grafana_host, grafana_port))
-    logger.debug("Data:\n{}".format(data))
-    r = requests.post("{}://{}:{}{}".format(
+    url = "{}://{}:{}{}".format(
         protocol,
         grafana_host,
         grafana_port,
-        grafana_annotation_api_endpoint),
+        grafana_annotation_api_endpoint)
+
+    logger.debug("URL: {}".format(url))
+    logger.debug("Data:{}".format(data))
+    logger.debug("Cert file: " + cert_file if cert_file else "No file")
+
+
+    r = requests.post(
+        url,
         headers=headers,
         data=data,
-        timeout=0.5)
+        verify=cert_file if cert_file else False,
+        timeout=5)
 
     ret = r.status_code
     logger.debug("Status code: {}".format(ret))
