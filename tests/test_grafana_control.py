@@ -1,4 +1,3 @@
-import pytest
 import responses
 from chaosdb.grafana import running,                    \
                             configure_control,          \
