@@ -122,7 +122,6 @@ def after_experiment_control(context: dict, arguments=None):
 
 def before_method_control(context: dict, arguments=None):
 
-
     for server in grafana:
         my_tags = []
         my_tags.extend(server['tags'])
@@ -134,6 +133,7 @@ def before_method_control(context: dict, arguments=None):
         }
         post_event(server, payload)
     return 1
+
 
 
 def after_method_control(context: dict, arguments=None):
@@ -149,6 +149,7 @@ def after_method_control(context: dict, arguments=None):
         }
         post_event(server, payload)
     return 1
+
 
 def before_activity_control(context: dict, arguments=None):
 
@@ -177,6 +178,7 @@ def before_activity_control(context: dict, arguments=None):
 
         post_event(server, payload)
     return 1
+
 
 
 def after_activity_control(context: dict, arguments=None):

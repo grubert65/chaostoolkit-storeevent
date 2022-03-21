@@ -60,6 +60,7 @@ the Annotation HTTP API.
 Moreover it is able to draw a region annotation around the whole experiment,
 making experiment visualization more visible.
 
+
 The grafana configuration section is keyed `"grafana"`.
 The grafana driver accepts a list of configuration sections, one for each
 grafana server you want to send annotations to.
@@ -81,6 +82,7 @@ annotation_api_endpoint| defaults to '/api/annotations'|
 
 The 'dashboardId' parameter points to the dashboard annotations are added to,
 otherwise annotations will be displayed on all dashboards.
+
 The 'only_actions' parameter allows to trace only actions, not probes. 
 The 'tags' parameter allows to add custom tags to each annotation.
 
