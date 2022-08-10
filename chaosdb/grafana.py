@@ -145,10 +145,9 @@ def after_method_control(context: dict, arguments=None):
 
 def before_activity_control(context: dict, arguments=None):
 
-    if (context["type"] != "action") and (only_actions == 1):
-        return 1
-
     for server in grafana:
+        if (context["type"] != "action") and (server["only_actions"] == 1):
+            continue
         my_tags = []
         my_tags.extend(server["tags"])
         my_tags.extend(
@@ -170,10 +169,9 @@ def before_activity_control(context: dict, arguments=None):
 
 def after_activity_control(context: dict, arguments=None):
 
-    if (context["type"] != "action") and only_actions == 1:
-        return 1
-
     for server in grafana:
+        if (context["type"] != "action") and server["only_actions"] == 1:
+            continue
         my_tags = []
         my_tags.extend(server["tags"])
         my_tags.extend(

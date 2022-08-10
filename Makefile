@@ -25,6 +25,13 @@ endef
 export PRINT_HELP_PYSCRIPT
 
 BROWSER := python -c "$$BROWSER_PYSCRIPT"
+VERSION := $(shell grep "current_version =" .bumpversion.cfg|awk -F "= " '{print $$2}')
+
+version: ## Get current version
+	@echo $(VERSION)
+
+bumpversion-patch: ## bump a new version locally (should be called before merging)
+	bumpversion --no-tag patch
 
 help:
 	@python -c "$$PRINT_HELP_PYSCRIPT" < $(MAKEFILE_LIST)
@@ -79,8 +86,9 @@ servedocs: docs ## compile the docs watching for changes
 	watchmedo shell-command -p '*.rst' -c '$(MAKE) -C docs html' -R -D .
 
 release: dist ## package and upload a release
-	echo ${PYPI_USER_NAME}
 	twine upload -u ${PYPI_USER_NAME} -p ${PYPI_PASSWORD} --skip-existing --verbose dist/*
+	git tag $(VERSION)
+	git push --tags
 
 dist: clean ## builds source and wheel package
 	python setup.py sdist
