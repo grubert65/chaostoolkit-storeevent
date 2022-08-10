@@ -30,6 +30,9 @@ VERSION := $(shell grep "current_version =" .bumpversion.cfg|awk -F "= " '{print
 version: ## Get current version
 	@echo $(VERSION)
 
+bumpversion-patch: ## bump a new version locally (should be called before merging)
+	bumpversion --no-tag patch
+
 help:
 	@python -c "$$PRINT_HELP_PYSCRIPT" < $(MAKEFILE_LIST)
 
