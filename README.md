@@ -1,8 +1,8 @@
-# Chaostoolkit storeevent Control
+# chaosdb: Chaostoolkit storeevent Control
 
 This control allows you to store events on a configurable data store.
 The data store can then be used to monitor events on a monitoring dashboard
-or to collect events on monitoring systems like Prometheus.
+or to collect events on a time series datastore.
 The control currently implements the following drivers:
 
 * an influx driver to store events on a InfluxDB time series database
@@ -75,7 +75,7 @@ Each section accepts the following configuration attributes:
 |cert_file         | file where the TSL certificate is stored (not mandatory)|
 |username          | the simple auth user name (not mandatory)|
 |password          | the simple auth password (not mandatory)|
-|dashboardId       | a specific dashboard ID (all in case it's not specified)|
+|dashboardId       | a specific dashboard ID (all in case it's not specified or 0)|
 |only_actions      | a boolean flag to send only actions or probes as well (defaults to false)|
 |tags              | a list of custom tags to tag annotations|
 annotation_api_endpoint| defaults to '/api/annotations'|
@@ -85,10 +85,6 @@ otherwise annotations will be displayed on all dashboards.
 
 The 'only_actions' parameter allows to trace only actions, not probes.
 The 'tags' parameter allows to add custom tags to each annotation.
-
-Refer to the official Grafana documentation for details on how to set up data
-stores for InfluxDB databases. For the Grafana driver just use the default
-grafana data store when configuring the annotations for your dashboard.
 
 Then, at the proper level, configure the control driver:
 
